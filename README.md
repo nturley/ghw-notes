@@ -1,11 +1,9 @@
-# gwh-notes
-
-# Structure
+# Sections
 
 ## Header
-Includes strings, types, known types, and hierarchy.
+Strings, types, known types, and hierarchy.
 
-I'm guessing that snapshots and cycles will reference strings and types by offset into these tables.
+I'm guessing that snapshots and cycles will reference strings and types by offset into these tables. The hierarchy shows where each signal is in the design.
 
 ## Snapshot
 Dumps initial value of all signals
