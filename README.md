@@ -23,15 +23,13 @@ GHDLwave STR EOS TYP WKT HIE EOH SNP ESN CYC ECY DIR STR TYP WKT HIE EOH SNP ESN
 ## Header
 Strings, types, known types, and hierarchy.
 
-I'm guessing that snapshots and cycles will reference strings and types by offset into these tables. The hierarchy shows where each signal is in the design.
-
 ### Strings
 * "STR" tag
 * 4 NUL bytes
 * 4 bytes string table length?
 * 4 bytes string length?
-* String Table
-  * still working on this format
+
+string table entries
 * 1 NUL byte
 * "EOS" tag
 
@@ -44,6 +42,27 @@ Type table entries
 * 1 NUL byte
 
 ### Type Table Entry
+
+#### Array
+* 1 byte subtype array
+* 1 NUL byte
+* 4 bytes type ID
+* 1 Byte Direction
+* 1/4/8 Bytes Left
+* 1/4/8 Bytes Right
+
+#### Enum/Boolean
+ * 1 byte kind
+ * 4 byte string ID
+ * 4 byte number of values
+ * Value names
+
+#### SubType Array
+
+
+ 
+ 
+
 
 
 ## Snapshot
