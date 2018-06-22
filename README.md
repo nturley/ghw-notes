@@ -15,7 +15,9 @@ Shows Signal value changes
 This is a map of tags and their file offsets starting from STR and ending with DIR.
 
 # Tags
-* Start Header ("GHDLwave")
+Looks like each tag is a null terminated short string. It looks like we don't do any compression for GHW format.
+
+* Start ("GHDLwave")
 * Strings ("STR" - "EOS")
 * Types ("TYP")
 * Known_Types ("WKT")
