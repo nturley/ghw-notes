@@ -32,11 +32,6 @@ Header Info
 * File Offset Size (1 byte): 1
 * Must Be Zero (1 byte): 0
 
-Strings
-Types
-Known Types
-Hierarchy
-
 ### Strings
 * "STR" tag
 * 4 NUL bytes
