@@ -21,17 +21,31 @@ GHDLwave STR EOS TYP WKT HIE EOH SNP ESN CYC ECY DIR STR TYP WKT HIE EOH SNP ESN
 # Sections
 
 ## Header
-Strings, types, known types, and hierarchy.
+
+Header Info
+* Magic String (9 bytes): "GHDLwave\n"
+* Header Info Length (1 byte): 16
+* Major Version (1 byte): 0
+* Minor Version (1 byte): 1
+* Endianness (1 byte): 1 (Little Endian)
+* Word Size (1 byte): 4
+* File Offset Size (1 byte): 1
+* Must Be Zero (1 byte): 0
 
 ### Strings
 * "STR" tag
 * 4 NUL bytes
-* 4 bytes string table length?
-* 4 bytes string length?
+* 4 bytes string table length (number of strings)
+* 4 bytes string length (sum of all string lengths)
 
 string table entries
 * 1 NUL byte
 * "EOS" tag
+
+#### String Table Entries
+1. Copy prev_len characters from the last string to the beginning of your new string
+2. Read characters into new string until you hit a non-printable character
+3. prev_len = the non printable character (possibly with some bit manipulation)
 
 ### Types
 * "TYP" tag
