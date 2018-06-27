@@ -119,26 +119,85 @@ types:
         type: ghw_snapshot
       - id: cycles
         type: ghw_cycle
+      - id: directory
+        type: ghw_dir
+      - id: tailer
+        type: ghw_tail
     types:
+      ghw_tail:
+        seq:
+          - id: magic
+            contents: "TAI\0"
+          - id: something
+            size: 4
+          - id: dir_pos
+            type: u4
+      ghw_dir_entry:
+        seq:
+          - id: tag
+            size: 4
+          - id: pos
+            type: u4
+      ghw_dir:
+        seq:
+          - id: magic
+            contents: "DIR\0"
+          - id: something
+            type: u4
+          - id: num_entries
+            type: u4
+          - id: entries
+            type: ghw_dir_entry
+            repeat: expr
+            repeat-expr: num_entries
+          - id: foot
+            contents: "EOD\0"
+      ghw_sig_value:
+        params:
+          - id: sig_index
+            type: u1
+        instances:
+          sig_type_index:
+            value: _root.sections.hierarchy.signal_block[sig_index - 1].elements.last.type
+          sig_type:
+            value: _root.sections.types_table.type_table[sig_type_index - 1].type_id
+        seq:
+          - id: val
+            type:
+              switch-on: sig_type
+              cases:
+                'rtik::type_b2': u1
+                'rtik::type_e8': u1
+      ghw_sig_change:
+        seq:
+          - id: sig_key
+            type: u1
+          - id: sig_val
+            if: sig_key != 0
+            type: ghw_sig_value(sig_key)
       ghw_cycle_cont:
         seq:
-          - id: dt
-            type: u4
-          - id: vals
+          - id: dt_bytes
             type: u1
-            repeat: expr
-            repeat-expr: 4
+            repeat: until
+            repeat-until: '_ & 0x80 == 0'
+          - id: sig_change
+            type: ghw_sig_change
+            repeat: until
+            repeat-until: _.sig_key == 0
+            if: dt_bytes[0] != 127
       ghw_cycle:
         seq:
           - id: magic
-            contents: "CYC\0"
+            contents: "CYC\0\0"
           - id: time
             type: u8
           - id: changes
             type: ghw_cycle_cont
-            repeat: expr
-            repeat-expr: 8
-            
+            repeat: until
+            repeat-until: _.dt_bytes[0] == 127
+          - id: foot
+            contents: "ECY\0"
       ghw_snapshot:
         seq:
           - id: magic
@@ -146,11 +205,17 @@ types:
           - id: current_time
             type: u8
           - id: values
-            type: u1
+            type: ghw_sig_value(_index + 1)
             repeat: expr
             repeat-expr: _parent.hierarchy.num_signals
           - id: foot
             contents: "ESN\0"
+      ghw_hier_block:
+        seq:
+          - id: elements
+            type: ghw_hier_scope
+            repeat: until
+            repeat-until: _.hier_id == hier_type::eoh or _.hier_id == hier_type::signal
       ghw_hier_scope:
         seq:
           - id: hier_id
@@ -181,10 +246,10 @@ types:
             type: u4
           - id: num_signals
             type: u4
-          - id: hier_scope
-            type: ghw_hier_scope
-            repeat: until
-            repeat-until: _.hier_id == hier_type::eoh
+          - id: signal_block
+            type: ghw_hier_block
+            repeat: expr
+            repeat-expr: num_signals + 1
           - id: foot
             contents: "EOH\0"
       ghw_wkt_table_entry:
